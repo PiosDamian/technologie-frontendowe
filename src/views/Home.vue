@@ -1,16 +1,25 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-center">
-      <v-text-field v-model="listName"></v-text-field>
-      <v-btn @click="addList" :disabled="!Boolean(listName)" color="primary">
-        <v-icon left v-if="Boolean(listName)">mdi-check</v-icon>
-        Dodaj listę
-      </v-btn>
-    </div>
-    <v-list class="d-flex align-start flex-wrap">
+    <v-list class="d-flex align-start flex-wrap" v-if="lists && lists.length">
       <v-list-item v-for="(list, index) in lists" :key="index" class="max-width">
         <v-list-item-content>
-          <todo-list @delete="removeList(index)" :name="list.name" :items="list.items"></todo-list>
+          <todo-list-preview @delete="removeList(index, list)" @details="showDetails(list)" :list="list"></todo-list-preview>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item v-if="showAddList" class="max-width">
+        <v-list-item-content>
+          <add-list @add="addList($event); showAddList = false" @cancel="showAddList = false"></add-list>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="max-width">
+        <v-list-item-content>
+          <v-container>
+            <v-card>
+              <v-card-text>
+                <v-btn @click="showAddList = true" :disabled="showAddList">Dodaj</v-btn>
+              </v-card-text>
+            </v-card>
+          </v-container>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -19,25 +28,52 @@
 
 <script>
 // @ is an alias to /src
-import TodoList from '@/components/todo-list';
+import axios from 'axios';
+import TodoListPreview from '@/components/todo-list-preview';
+import AddList from '@/components/add-list'
 
 export default {
   name: 'Home',
-  components: { TodoList },
+  components: {TodoListPreview, AddList},
   data() {
     return {
-      listName: '',
-      lists: []
+      lists: [],
+      showAddList: false
     };
   },
   methods: {
-    addList() {
-      this.lists.push({ name: this.listName, items: [] });
-      this.listName = '';
+    addList(newList) {
+      axios.post('todos/', newList)
+          .then(response => response.data)
+          .then(list => {
+            list.items = JSON.parse(list.items);
+            return list;
+          })
+          .then(list => this.lists.push(list))
+          .catch(this.showError.bind(this));
     },
-    removeList(index) {
-      this.lists.splice(index, 1);
+    removeList(index, list) {
+      axios.delete(`todos/${list.id}`).then(() => {
+        this.lists.splice(index, 1);
+      }).catch(() => this.showError('Problem z tworzeniem nowej listy'))
+    },
+    showDetails(list) {
+      this.$router.push(`details/${list.id}`);
+    },
+    showError(text) {
+      console.log(text);
     }
+  },
+  created() {
+    axios.get('todos')
+        .then(response => response.data)
+        .then(lists => {
+              lists.forEach(list => list.items = JSON.parse(list.items));
+              return lists;
+            }
+        )
+        .then(lists => this.lists = lists)
+        .catch(() => this.showError('Problem z pobieraniem listy'));
   }
 };
 </script>
@@ -46,9 +82,11 @@ export default {
 .d-flex {
   column-gap: 10px;
 }
+
 .max-width {
   max-width: calc(33% - 10px / 4);
 }
+
 @media (max-width: 600px) {
   .max-width {
     max-width: 100%;

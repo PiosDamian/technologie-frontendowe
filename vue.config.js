@@ -1,3 +1,10 @@
 module.exports = {
-  transpileDependencies: ["vuetify"]
+  transpileDependencies: ['vuetify'],
+  devServer: {
+    proxy: {
+      '/*': {
+        target: 'http://localhost:8000/'
+      }
+    }
+  }
 };
