@@ -105,7 +105,7 @@ export default {
         return lists;
       })
       .then(lists => (this.lists = lists))
-      .catch(() => this.showAlert('Problem z pobieraniem listy'))
+      .catch(() => this.showAlert('Problem z pobieraniem listy', 'error'))
       .finally(() => (this.loading = false));
   }
 };

@@ -8,6 +8,7 @@
     <v-main>
       <router-view></router-view>
     </v-main>
+    <v-footer>Damian Pioś</v-footer>
   </v-app>
 </template>
 
