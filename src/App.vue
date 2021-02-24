@@ -1,7 +1,8 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <h1>Aplikacja {{ name }}</h1>
+      <h1>{{ name }}</h1>
+      <router-link to="/" class="nav-item">Home</router-link>
     </v-app-bar>
 
     <v-main>
@@ -21,3 +22,9 @@ export default {
   })
 };
 </script>
+<style scoped>
+.nav-item {
+  margin-left: 10px;
+  color: white;
+}
+</style>

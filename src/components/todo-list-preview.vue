@@ -3,14 +3,18 @@
     <v-card>
       <v-card-title class="flex">
         <div>{{ list.name }}</div>
-        <v-btn icon @click="remove">
+        <v-btn
+          icon
+          @click="
+            $event.stopPropagation();
+            remove();
+          "
+        >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </v-card-title>
       <v-card-text>
-        <div>
-          {{ (list.items || []).filter(item => item.done).length }}/{{ (list.items || []).length }}
-        </div>
+        <div>{{ (list.items || []).filter(item => item.done).length }}/{{ (list.items || []).length }}</div>
         <v-spacer></v-spacer>
         <div>{{ list.description }}</div>
       </v-card-text>
@@ -20,6 +24,7 @@
 
 <script>
 export default {
+  // component jest placeohlderem listy
   name: 'todo-list-preview',
   props: ['list'],
   methods: {
@@ -30,7 +35,7 @@ export default {
       this.$emit('details');
     }
   }
-}
+};
 </script>
 
 <style scoped>
