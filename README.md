@@ -1,4 +1,4 @@
-# todo
+# Fornt Todo - Wprowadzenie do technologii frontendowych
 
 ## Project setup
 ```
